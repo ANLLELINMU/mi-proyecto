@@ -1,0 +1,15 @@
+localStorage
+
+configurar el axios de manera global 
+como pasarle tu token al header de tu axios
+
+getElementById()
+FormData
+addEventListener
+window.location.href
+localStorage
+
+pasarlo al heder de mi axios de la tabla datos 
+
+traer mi usuario a datos 
+y cerrar session 

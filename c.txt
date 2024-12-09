@@ -1,0 +1,85 @@
+data() {
+  return {
+    tabla: [],          // Lista de estudiantes
+    error: null,        // Error al cargar los datos
+    loading: false,     // Estado de carga
+    form: {             // Formulario para nuevo/editar estudiante
+      id: null,
+      name: '',
+      lastname: '',
+      email: '',
+      phone: ''
+    },
+  };
+},
+methods: {
+
+  // Obtener los estudiantes
+  async obtenerDatos() {
+    this.loading = true;
+    try {
+      const response = await axios.get('tabla');
+      this.tabla = response.data;
+    } catch (err) {
+      this.error = err.message;
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  // Método para guardar un estudiante (nuevo o editado)
+  async saveEstudiante() {
+    if (this.form.id) {
+      // Editar estudiante
+      try {
+        await axios.put(`tabla/${this.form.id}`, this.form);
+        this.obtenerDatos();  // Refrescar la lista
+        alert('Estudiante actualizado');
+      } catch (err) {
+        this.error = 'Error al actualizar el estudiante';
+      }
+    } else {
+      // Crear nuevo estudiante
+      try {
+        await axios.post('tabla', this.form);
+        this.obtenerDatos();  // Refrescar la lista
+        alert('Estudiante creado');
+      } catch (err) {
+        this.error = 'Error al crear el estudiante';
+      }
+    }
+
+    // Cerrar el modal después de guardar
+    this.clearForm();
+    this.$refs.closeModal.click();  // Cerrar el modal utilizando la referencia
+  },
+
+  // Método para editar un estudiante
+  editEstudiante(id) {
+    const estudiante = this.tabla.find((item) => item.id === id);
+    this.form = { ...estudiante };  // Copiar los datos del estudiante al formulario
+  },
+
+  // Método para eliminar un estudiante
+  async deleteEstudiante(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este estudiante?')) {
+      try {
+        await axios.delete(`tabla/${id}`);
+        this.obtenerDatos();
+      } catch (err) {
+        this.error = 'Error al eliminar el estudiante';
+      }
+    }
+  },
+
+  // Limpiar el formulario
+  clearForm() {
+    this.form = {
+      id: null,
+      name: '',
+      lastname: '',
+      email: '',
+      phone: ''
+    };
+  }
+}

@@ -1,0 +1,129 @@
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      tabla: [],  
+      data: { id: null, name: '', lastname: '' }, 
+      error: null,
+      loading: false,
+    };
+  },
+  
+  mounted() {
+    this.obtenerDatos(); 
+  },
+
+  methods: {
+    
+    async obtenerDatos() {
+      this.loading = true;
+      try {
+        const response = await axios.get('tabla'); // Obtener los datos de los estudiantes
+        this.tabla = response.data;
+      } catch (err) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // Método para editar un estudiante
+    editarEstudiante(myfirstmodel) {
+    
+      this.data = { 
+        id: myfirstmodel.id, 
+        name: myfirstmodel.name, 
+        lastname: myfirstmodel.lastname 
+      };
+     
+      this.abrirModal();
+    },
+
+    async guardardatos() {
+      try {
+        let response;
+
+        //usamos PUT para actualizar
+        if (this.data.id) {
+          response = await axios.put(`guardardatos/${this.data.id}`, this.data);
+        } else {
+          //  usamos POST para crear 
+          response = await axios.post('guardardatos', this.data);
+        }
+
+        if (response) {
+       
+          if (this.data.id) {
+            const index = this.tabla.findIndex(item => item.id === this.data.id);
+            if (index !== -1) {
+              this.tabla.splice(index, 1, response.data);
+            }
+          } else {
+        
+            this.tabla.push(response.data);
+          }
+
+          this.data = { id: null, name: '', lastname: '' };
+          this.cerrarModal();
+        }
+      } catch (error) {
+        console.error('Error al guardar los datos:', error);
+      }
+    },
+
+ 
+    abrirModal() {
+      const modal = document.querySelector('#exampleModal');
+      if (modal) {
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        modalInstance.show();
+      }
+    },
+
+  
+    cerrarModal() {
+      const modal = document.querySelector('#exampleModal');
+      if (modal) {
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        modalInstance.hide();
+      }
+    }
+  }
+};
+</script>
+
+
+
+
+
+
+  <!-- Modal  editar -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">{{ data.id ? 'Editar Estudiante' : 'Nuevo Estudiante' }}</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="guardardatos">
+              <div class="mb-3">
+                <label for="name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" v-model="data.name" id="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="lastname" class="form-label">Apellido</label>
+                <input type="text" class="form-control" v-model="data.lastname" id="lastname" required>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary">{{ data.id ? 'Guardar Cambios' : 'Crear Estudiante' }}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+ 

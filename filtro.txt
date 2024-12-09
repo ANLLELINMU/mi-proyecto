@@ -1,0 +1,21 @@
+
+                @include('$myfirstmodels.navuser')
+
+
+<nav class="d-flex justify-content-end filter-container">
+                    <button type="submit" class="btn btn-dark">Buscar</button>
+                    <input type="search" name="filtro"  id="filtro" placeholder="Escribe Aquí" >
+                    </nav> 
+
+
+const mix=require('laravel-mix');
+mix.js('resource/js/app.js','public/js')
+Vue()
+.sass('resource/sass/app.scss', 'public/css')
+.sourceMaps();
+
+mix.browserSync('http://127.0.0.1:8000]');
+
+
+
+https://www.youtube.com/watch?v=amwXrsHxoIg
